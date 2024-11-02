@@ -1,154 +1,157 @@
+import time
 from codrone_edu.drone import *
 
 
-def validColors(front,back):
-    if (front == back) and (front == "Red" or front == "Blue" or front == "Green"):
-        return True
-    else:
-        return False
-
-
-def forward(x):  # forward 1 - 18-19 inches. use 0.1 for stabilization
-    drone.set_yaw(0)
-    drone.set_roll(0)
-    drone.set_pitch(50)
-    drone.move(x)
-    drone.set_pitch(-100)
-    drone.move(.1)
-    return
-
-def backward(x):
-    drone.set_yaw(0)
-    drone.set_pitch(-50)
-    drone.set_roll(0)
-    drone.move(x)
-    drone.set_pitch(100)
-    drone.move(.1)
-    drone.set_yaw(0)
-    drone.set_pitch(0)
-    drone.set_roll(0)
-    return
-
-
-def right(x):
-    drone.set_yaw(0)
-    drone.set_roll(50)
-    drone.set_pitch(0)
-    drone.move(x)
-    drone.set_roll(-100)
-    drone.move(.1)
-    drone.set_yaw(0)
-    drone.set_pitch(0)
-    drone.set_roll(0)
-    return
-
-
-def left(x):
-    drone.set_yaw(0)
-    drone.set_roll(-50)
-    drone.set_pitch(0)
-    drone.move(x)
-    drone.set_roll(100)
-    drone.move(.1)
-    drone.set_yaw(0)
-    drone.set_pitch(0)
-    drone.set_roll(0)
-    return
-
-
-def up(x):
-    drone.set_pitch(0)
-    drone.set_throttle(50)
-    drone.move(x)
-    drone.set_throttle(-100)
-    drone.move(0.1)
-    drone.set_throttle(0)
-    drone.set_yaw(0)
-    drone.set_pitch(0)
-    drone.set_roll(0)
-    return
-
-
-def down(x):
-    drone.set_throttle(-50)
-    drone.move(x)
-    drone.set_throttle(100)
-    drone.move(0.1)
-    drone.set_throttle(0)
-    drone.set_yaw(0)
-    drone.set_pitch(0)
-    drone.set_roll(0)
-    return
-
-
-print("MAIN")
 drone = Drone()
-drone.pair()
+drone.open()
 
-drone.takeoff()  # height - 20-30 inches
-forward(1)       # move 36 inches forward
-up(0.5)
-left(.30)
-"""archLoopCount = 0;
-archLooped = 0;
-while archLooped < archLoopCount: # arch loop, set archLoopCount to 0 until everything else works
-    up(2)
-    backward(3)
-    down(2)
-    forward(3)
-    archLooped = archLooped+1"""
 
-up(.65)       # total height - 48 inches
-forward(1.75)  # move 72 inches forward
+def validColors(front, back):      # checks to see if colors are errors or are valid
+   if (front == back) and (front == "Red" or front == "Blue" or front == "Green"):
+       return True
+   else:
+       return False
 
-"""keyholeLoopCount = 0
-keyholeLooped = 0
-while keyholeLooped < keyholeLoopCount: # keyhole loop, set keyholeLoopCount to 0 until everything else works
-    up(5)
-    backward(5)
-    down(5)
-    forward(5)
-    keyholeLooped = keyholeLooped+1"""
+def getColors():
+   colorFront = "error"  # detect color
+   colorBack = "error2"
 
-forward(1)  # forward 18 inches
-up(.25)       # up 8 inches
-left(2)    # the bigger part of 90 inches. Through green keyhole loop.
-
-down(4)     # down 30 inches, total height 26 inches
-left(.85)     # the smaller part of 90 inches, through the second arch
-drone.land()
-
-colorFront = "error"  # detect color
-colorBack = "error2"
-
-failCount = 0
-while not validColors(colorFront,colorBack):
-    try:
-        colorFront = drone.get_front_color()
-        colorBack = drone.get_back_color()
-        print(colorFront+" "+colorBack)
-        failCount += 1
-        if failCount == 100:
+   failCount = 0
+   while not validColors(colorFront, colorBack):
+      try:
+         colorFront = drone.get_front_color()
+         colorBack = drone.get_back_color()
+         print(colorFront + " " + colorBack)
+         failCount += 1
+         if failCount == 100:
             colorFront = "Green"
             colorBack = "Green"
-    except:
-        print("error")
+      except:
+         print("error")
+      print(colorFront)
+      if colorFront == "Red":
+         drone.set_controller_LED(255, 0, 0, 100)
+         drone.set_drone_LED(255, 0, 0, 100)
+
+      if colorFront == "Blue":
+         drone.set_controller_LED(0, 0, 255, 100)
+         drone.set_drone_LED(0, 0, 255, 100)
+
+      if colorFront == "Green":
+         drone.set_controller_LED(0, 255, 0, 100)
+         drone.set_drone_LED(0, 255, 0, 100)
+
+
+def figureEight(x):      # loops through the arch and keyhole
+   arch_loop_count = x
+   arch_looped = 0
+   while arch_looped < arch_loop_count:  # arch loop, set archLoopCount to 0 until everything else works
+       forward(.49)
+       up(2)
+       forward(.59)
+       down(2)
+       backward(.59)
+       up(2)
+       backward(.59)
+       down(2)
+       forward(.59)
+       arch_looped = arch_looped + 1
+
+
+
+
+def forward(x):         # moves drone forward; 1 second - 18-19 inches; use 0.1 for stabilization
+   drone.set_yaw(0)
+   drone.set_roll(0)
+   drone.set_pitch(50)
+   drone.move(x)
+   drone.set_pitch(-100)
+   drone.move(.1)
+   drone.reset_move()
+   return
+
+
+
+
+def backward(x):        # moves drone backward; input seconds
+   drone.set_yaw(0)
+   drone.set_pitch(-50)
+   drone.set_roll(0)
+   drone.move(x)
+   drone.set_pitch(100)
+   drone.move(.1)
+   drone.reset_move()
+   return
+
+
+
+
+def right(x):       # moves drone right; input seconds
+   drone.set_yaw(0)
+   drone.set_roll(50)
+   drone.set_pitch(0)
+   drone.move(x)
+   drone.set_roll(-100)
+   drone.move(.1)
+   drone.reset_move()
+   return
+
+
+
+
+def left(x):        # moves drone left; input seconds
+   drone.set_yaw(0)
+   drone.set_roll(-50)
+   drone.set_pitch(0)
+   drone.move(x)
+   drone.set_roll(100)
+   drone.move(.1)
+   drone.reset_move()
+   return
+
+
+
+
+def up(x):      # moves drone up; input seconds
+   drone.set_pitch(0)
+   drone.set_throttle(50)
+   drone.move(x)
+   drone.set_throttle(-100)
+   drone.move(0.1)
+   drone.set_throttle(0)
+   drone.reset_move()
+   return
+
+
+
+
+def down(x):        # moves drone down; input seconds
+   drone.set_throttle(-50)
+   drone.move(x)
+   drone.set_throttle(0)
+   drone.move(0.1)
+   drone.set_throttle(0)
+   drone.reset_move()
+   return
+
+
+
 
 drone.takeoff()
-print(colorFront)
-if colorFront == "Red":
-    drone.set_controller_LED(255,0,0,100)
-    drone.set_drone_LED(255,0,0,100)
-    backward(1.4)
-if colorFront == "Blue":
-    drone.set_controller_LED(0,0,255,100)
-    drone.set_drone_LED(0,0,255,100)
-    forward(1.2)
-if colorFront == "Green":
-    drone.set_controller_LED(0,255,0,100)
-    drone.set_drone_LED(0,255,0,100)
-    right(1)
-
-
+# Type Code Here
+#forward(1.932)
+#figureEight(1)
+#up(1.5)
+#forward(.62)
+#forward(1.975)
+#getColors()
+#drone.land()
+#drone.takeoff()
+#up(3)#SET AT PRACTICE
+#right(2.52)
+#up(2)#SET AT PRACTICE
+#backward(1.225)
+#drone.land()
+#drone.close()
+forward(.73)
 drone.land()
-drone.close()
