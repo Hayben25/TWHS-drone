@@ -139,19 +139,17 @@ def down(x):        # moves drone down; input seconds
 
 drone.takeoff()
 # Type Code Here
-#forward(1.932)
-#figureEight(1)
-#up(1.5)
-#forward(.62)
-#forward(1.975)
-#getColors()
-#drone.land()
-#drone.takeoff()
-#up(3)#SET AT PRACTICE
-#right(2.52)
-#up(2)#SET AT PRACTICE
-#backward(1.225)
-#drone.land()
-#drone.close()
-forward(.73)
+forward(1.932)
+figureEight(1)
+up(1.5)
+forward(.62)
+forward(1.975)
+getColors()
 drone.land()
+drone.takeoff()
+up(3)#SET AT PRACTICE
+right(2.52)
+up(2)#SET AT PRACTICE
+backward(1.225)
+drone.land()
+drone.close()
